@@ -20,7 +20,7 @@ Config.NotificationType = 'ox_lib'
 Config.Progress = 'ox_lib' -- qbcore / ox_lib /
 Config.TextUI = "ox_lib" -- TextUIs | types: esx, ox_lib, luke
 
-Config.GoochSpawn = 1 -- EVERY 10 MINUTES IT WILL CHOOSE PLAYER AND SPAWN GOOCH
+Config.GoochSpawn = 15 -- EVERY 15 MINUTES IT WILL CHOOSE PLAYER AND SPAWN GOOCH
 
 Config.TakeMoney = {
     Min = 100,
