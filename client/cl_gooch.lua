@@ -110,7 +110,26 @@ end
 RegisterNetEvent('attacker:addPropTarget')
 AddEventHandler('attacker:addPropTarget', function(propNet)
     giftSpehere = nil
+
+    local spawnTries = 10
+
+    while not NetworkDoesEntityExistWithNetworkId(propNet) do
+        spawnTries -= 1
+
+        if spawnTries <= 0 then
+            return
+        end
+
+        Wait(100)
+    end
+
     local prop = NetToObj(propNet)
+
+    if not DoesEntityExist(prop) then
+        print("Failed to get prop entity.")
+        return
+    end
+
     PlaceObjectOnGroundProperly(prop)
     local giftPosition = GetEntityCoords(prop)
 
