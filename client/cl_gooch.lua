@@ -117,6 +117,7 @@ AddEventHandler('attacker:addPropTarget', function(propNet)
         spawnTries -= 1
 
         if spawnTries <= 0 then
+            print("Failed to get prop entity by net id.")
             return
         end
 
