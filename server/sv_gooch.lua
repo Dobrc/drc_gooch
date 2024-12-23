@@ -133,6 +133,13 @@ AddEventHandler('drc_gooch:takemoney', function()
         return
     end
 
+    local playerMoney = GetMoneyCount(src)
+
+    if playerMoney < Config.TakeMoney.Min then
+        print(("Player %s does not have enough money to take."):format(src))
+        return
+    end
+
     local amount = math.random(Config.TakeMoney.Min, Config.TakeMoney.Max)
     RemoveMoney(amount, src)
 end)
