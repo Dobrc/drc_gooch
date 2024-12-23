@@ -1,16 +1,10 @@
-Utils = {}
-
 local ver = '1.0.0'
-
 
 CreateThread(function()
     if GetResourceState(GetCurrentResourceName()) == 'started' then
         print('DRC GOOCH STARTED ON VERSION: ' .. ver)
     end
 end)
-
-
-
 
 if Config.Framework == "esx" then
     if Config.NewESX then
@@ -33,6 +27,17 @@ elseif Config.Framework == "standalone" then
     -- ADD YOU FRAMEWORK
 end 
 
+function GetMoneyCount(source)
+    if Config.Framework == "esx" then
+        local xPlayer = ESX.GetPlayerFromId(source)
+        return xPlayer.getMoney()
+    elseif Config.Framework == "qbcore" then
+        local xPlayer = QBCore.Functions.GetPlayer(source)
+        return xPlayer.Functions.GetMoney('cash')
+    elseif Config.Framework == "standalone" then
+        -- ADD YOUR FRAMEWORK
+    end
+end
 
 function AddMoney(count, source)
     if Config.Framework == "esx" then

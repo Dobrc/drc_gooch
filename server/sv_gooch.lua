@@ -106,16 +106,23 @@ AddEventHandler('attacker:pedKilled', function(deathCoords)
 
     local propModel = `bzzz_xmas_gift_box_a`
     local prop = CreateObject(propModel, deathCoords.x, deathCoords.y, deathCoords.z, true, true, true)
-    Wait(100)
+    local spawnTries = 50
 
-    if prop ~= 0 and DoesEntityExist(prop) then
-        local propNetId = NetworkGetNetworkIdFromEntity(prop)
-        TriggerClientEvent('attacker:addPropTarget', killer, propNetId)
-
-        attacks[tostring(killer)].canTakeReward = true
-    else
-        print("Failed to create prop. Check if the model is valid and streamed.")
+    while not DoesEntityExist(prop) and spawnTries > 0 do
+        spawnTries = spawnTries - 1
+        Wait(100)
     end
+
+    if not prop or not DoesEntityExist(prop) then
+        print("Failed to create prop. Check if the model is valid and streamed.")
+        return
+    end
+
+    local propNetId = NetworkGetNetworkIdFromEntity(prop)
+    TriggerClientEvent('attacker:addPropTarget', killer, propNetId)
+
+    attacks[tostring(killer)].canTakeReward = true
+    attacks[tostring(killer)].gitftPropNetId = propNetId
 end)
 
 RegisterNetEvent('drc_gooch:takemoney')
@@ -123,6 +130,13 @@ AddEventHandler('drc_gooch:takemoney', function()
     local src = source
     if not attacks[tostring(src)] then
         print("Security: Player "..src.." tried to takemoney without permission.")
+        return
+    end
+
+    local playerMoney = GetMoneyCount(src)
+
+    if playerMoney < Config.TakeMoney.Min then
+        print(("Player %s does not have enough money to take."):format(src))
         return
     end
 
@@ -151,6 +165,12 @@ AddEventHandler('drc_gooch:addrewards', function()
 
     for _, itemData in ipairs(reward.Items) do
         AddItem(itemData.name, itemData.count, src)
+    end
+
+    local giftProp = attacks[tostring(src)].gitftPropNetId and NetworkGetEntityFromNetworkId(attacks[tostring(src)].gitftPropNetId)
+
+    if giftProp and DoesEntityExist(giftProp) then
+        DeleteEntity(giftProp)
     end
 
     attacks[tostring(src)] = nil
