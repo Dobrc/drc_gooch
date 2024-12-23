@@ -8,8 +8,7 @@ AddEventHandler('attacker:spawnAttackerClient', function()
     end
     isAttackerSpawned = true
 
-    local playerPed = PlayerPedId()
-    local playerCoords = GetEntityCoords(playerPed)
+    local playerCoords = GetEntityCoords(cache.ped)
 
     local pedModel = `U_M_M_YuleMonster`
     lib.requestModel(pedModel)
@@ -34,19 +33,19 @@ AddEventHandler('attacker:spawnAttackerClient', function()
     local ptfxHandle = StartNetworkedParticleFxLoopedOnEntity(ptfxName, attackerPed, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, false, false, false, 0)
     SetParticleFxLoopedColour(ptfxHandle, 0.0, 1.0, 0.0)
 
-    TaskGoToEntity(attackerPed, playerPed, -1, 1.0, 2.0, 1073741824.0, 0)
+    TaskGoToEntity(attackerPed, cache.ped, -1, 1.0, 2.0, 1073741824.0, 0)
 
     CreateThread(function()
         local ragdolled = false
         while isAttackerSpawned and DoesEntityExist(attackerPed) do
             Wait(100)
             local attackerCoords = GetEntityCoords(attackerPed)
-            local distance = #(attackerCoords - GetEntityCoords(playerPed))
+            local distance = #(attackerCoords - GetEntityCoords(cache.ped))
 
             if distance < 1.5 and not ragdolled and not IsPedDeadOrDying(attackerPed, true) then
-                SetPedToRagdoll(playerPed, 2000, 2000, 0, true, true, false)
+                SetPedToRagdoll(cache.ped, 2000, 2000, 0, true, true, false)
                 ragdolled = true
-                TaskSmartFleePed(attackerPed, playerPed, 100.0, -1, true, true)
+                TaskSmartFleePed(attackerPed, cache.ped, 100.0, -1, true, true)
                 SetPedAsNoLongerNeeded(attackerPed)
                 TriggerServerEvent('drc_gooch:takemoney')
                 Notify('info', 'Gooch !', Config.Locales.GoochStoleMoney)
@@ -79,12 +78,11 @@ function OpenReward(rewardPosition)
     else
         giftSpehere:remove()
     end
-    local ped = PlayerPedId()
-    FreezeEntityPosition(ped, true)
-    TaskStartScenarioInPlace(ped, 'CODE_HUMAN_MEDIC_TEND_TO_DEAD', 0, true)
+    FreezeEntityPosition(cache.ped, true)
+    TaskStartScenarioInPlace(cache.ped, 'CODE_HUMAN_MEDIC_TEND_TO_DEAD', 0, true)
     Wait(2000)
     lib.requestAnimDict("anim@amb@business@coc@coc_unpack_cut@")
-    TaskPlayAnim(ped, 'anim@amb@business@coc@coc_unpack_cut@', 'fullcut_cycle_v6_cokecutter', 8.0, -8.0, -1, 49, 0, 0, 0, 0)
+    TaskPlayAnim(cache.ped, 'anim@amb@business@coc@coc_unpack_cut@', 'fullcut_cycle_v6_cokecutter', 8.0, -8.0, -1, 49, 0, 0, 0, 0)
     RemoveAnimDict("anim@amb@business@coc@coc_unpack_cut@")
 
     CreateThread(function()
@@ -103,8 +101,8 @@ function OpenReward(rewardPosition)
 
     ProgressBar(4000, "Opening gift")
 
-    ClearPedTasks(ped)
-    FreezeEntityPosition(ped, false)
+    ClearPedTasks(cache.ped)
+    FreezeEntityPosition(cache.ped, false)
     TriggerServerEvent('drc_gooch:addrewards')
     Notify('info', 'Gooch !', Config.Locales.NiceGiftFromGooch)
 end
